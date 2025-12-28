@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Editar curso"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/etNombreCurso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre del curso"/>
+
+        <EditText
+            android:id="@+id/etDescripcionCurso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descripción"/>
+
+        <EditText
+            android:id="@+id/etDocenteCurso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Docente"/>
+
+        <Button
+            android:id="@+id/btnActualizarCurso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Actualizar curso"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+</ScrollView>
