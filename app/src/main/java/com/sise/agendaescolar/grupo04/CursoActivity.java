@@ -3,6 +3,7 @@ package com.sise.agendaescolar.grupo04;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +41,6 @@ public class CursoActivity extends AppCompatActivity {
         });
     }
 
-    // 🔄 Se ejecuta cada vez que vuelves a esta pantalla
     @Override
     protected void onResume() {
         super.onResume();
@@ -50,19 +50,38 @@ public class CursoActivity extends AppCompatActivity {
     private void cargarCursos() {
         listaCursos = db.getAllCursos();
 
-        adapter = new CursoAdapter(
-                this,
-                listaCursos,
-                curso -> {
-                    Intent intent = new Intent(CursoActivity.this, EditCursoActivity.class);
-                    intent.putExtra("id", curso.getId());
-                    intent.putExtra("nombre", curso.getNombre());
-                    intent.putExtra("descripcion", curso.getDescripcion());
-                    intent.putExtra("docente", curso.getDocente());
-                    startActivity(intent);
-                }
-        );
+        adapter = new CursoAdapter(this, listaCursos, new CursoAdapter.OnCursoClickListener() {
+
+            // 👉 EDITAR
+            @Override
+            public void onCursoClick(Curso curso) {
+                Intent intent = new Intent(CursoActivity.this, EditCursoActivity.class);
+                intent.putExtra("id", curso.getId());
+                intent.putExtra("nombre", curso.getNombre());
+                intent.putExtra("descripcion", curso.getDescripcion());
+                intent.putExtra("docente", curso.getDocente());
+                startActivity(intent);
+            }
+
+            // 👉 ELIMINAR (BOTÓN)
+            @Override
+            public void onCursoDelete(Curso curso) {
+                mostrarDialogEliminar(curso);
+            }
+        });
 
         recyclerCursos.setAdapter(adapter);
+    }
+
+    private void mostrarDialogEliminar(Curso curso) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar curso")
+                .setMessage("¿Deseas eliminar el curso \"" + curso.getNombre() + "\"?")
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    db.deleteCurso(curso.getId());
+                    cargarCursos();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }

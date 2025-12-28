@@ -1,17 +1,16 @@
 package com.sise.agendaescolar.grupo04.adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sise.agendaescolar.grupo04.R;
-import com.sise.agendaescolar.grupo04.database.DatabaseHelper;
 import com.sise.agendaescolar.grupo04.model.Curso;
 
 import java.util.List;
@@ -22,9 +21,10 @@ public class CursoAdapter extends RecyclerView.Adapter<CursoAdapter.CursoViewHol
     private List<Curso> listaCursos;
     private OnCursoClickListener listener;
 
-    // 🔹 Interface
+    // 🔹 Interface de comunicación con la Activity
     public interface OnCursoClickListener {
-        void onCursoClick(Curso curso);
+        void onCursoClick(Curso curso);     // editar
+        void onCursoDelete(Curso curso);    // eliminar
     }
 
     // 🔹 Constructor
@@ -51,32 +51,18 @@ public class CursoAdapter extends RecyclerView.Adapter<CursoAdapter.CursoViewHol
         holder.txtDescripcionCurso.setText(curso.getDescripcion());
         holder.txtDocenteCurso.setText("Docente: " + curso.getDocente());
 
-        // CLICK → editar
+        // CLICK EN CARD → EDITAR
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onCursoClick(curso);
             }
         });
 
-        // LONG CLICK → eliminar
-        holder.itemView.setOnLongClickListener(v -> {
-
-            new AlertDialog.Builder(context)
-                    .setTitle("Eliminar curso")
-                    .setMessage("¿Deseas eliminar este curso?")
-                    .setPositiveButton("Sí", (dialog, which) -> {
-
-                        DatabaseHelper db = new DatabaseHelper(context);
-                        db.deleteCurso(curso.getId());
-
-                        listaCursos.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, listaCursos.size());
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
-
-            return true;
+        // BOTÓN ELIMINAR → AVISA A LA ACTIVITY
+        holder.btnEliminarCurso.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onCursoDelete(curso);
+            }
         });
     }
 
@@ -85,7 +71,7 @@ public class CursoAdapter extends RecyclerView.Adapter<CursoAdapter.CursoViewHol
         return listaCursos.size();
     }
 
-    // 🔹 Actualizar lista
+    // 🔹 Para refrescar la lista desde la Activity
     public void actualizarLista(List<Curso> nuevaLista) {
         this.listaCursos = nuevaLista;
         notifyDataSetChanged();
@@ -94,7 +80,10 @@ public class CursoAdapter extends RecyclerView.Adapter<CursoAdapter.CursoViewHol
     // 🔹 ViewHolder
     static class CursoViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtNombreCurso, txtDescripcionCurso, txtDocenteCurso;
+        TextView txtNombreCurso;
+        TextView txtDescripcionCurso;
+        TextView txtDocenteCurso;
+        Button btnEliminarCurso;
 
         public CursoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,6 +91,7 @@ public class CursoAdapter extends RecyclerView.Adapter<CursoAdapter.CursoViewHol
             txtNombreCurso = itemView.findViewById(R.id.txtNombreCurso);
             txtDescripcionCurso = itemView.findViewById(R.id.txtDescripcionCurso);
             txtDocenteCurso = itemView.findViewById(R.id.txtDocenteCurso);
+            btnEliminarCurso = itemView.findViewById(R.id.btnEliminarCurso);
         }
     }
 }
